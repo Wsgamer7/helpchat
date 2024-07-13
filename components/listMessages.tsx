@@ -20,7 +20,12 @@ export default function ListMessgages() {
     }
   };
   const scrollDown = () => {
-    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    // scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (scrollRef.current) {
+      window.requestAnimationFrame(() => {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      });
+    }
   };
   useEffect(() => {
     scrollDown();
