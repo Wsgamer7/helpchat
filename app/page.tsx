@@ -11,7 +11,7 @@ export default async function Home() {
   const { data, error } = await supabase.auth.getSession();
   return (
     <>
-      <div className="flex flex-col h-screen mx-5 my-2 ">
+      <div className="flex flex-col h-screen mx-5 my-2 relative">
         <Navbar user={data.session?.user} />
         <ChatMessages />
         <ChatInput />
