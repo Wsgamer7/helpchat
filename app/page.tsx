@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Navbar from "@/components/navbar";
 import { supabaseServer } from "@/lib/supabase/server";
 import InitUser from "@/lib/store/InitUser";
@@ -11,7 +10,7 @@ export default async function Home() {
   const { data, error } = await supabase.auth.getSession();
   return (
     <>
-      <div className="flex flex-col h-screen mx-5 my-2 relative">
+      <div className="flex flex-col fullScreen mx-5 my-2 relative">
         <Navbar user={data.session?.user} />
         <ChatMessages />
         <ChatInput />

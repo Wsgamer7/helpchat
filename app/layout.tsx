@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} overflow-y-hidden`}>
+      <body className={`${inter.className} overflow-y-hidden `}>
         <Toaster position="top-center" />
         {children}
       </body>

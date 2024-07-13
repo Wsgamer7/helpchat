@@ -76,6 +76,11 @@
   --chart-5: 340 75% 55%;
 }
 
+.fullScreen {
+  /*fix for mobile*/
+  height: 100dvh;
+}
+
 @layer base {
   * {
     @apply border-border;
