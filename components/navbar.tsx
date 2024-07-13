@@ -11,11 +11,13 @@ import { supabaseBrowser } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Navbar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const handleLoginWithGithub = async () => {
     const supabase = supabaseBrowser();
+    toast("登录中...");
     supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
@@ -25,7 +27,8 @@ export default function Navbar({ user }: { user: User | undefined }) {
   };
   const handleLogout = async () => {
     const supabase = supabaseBrowser();
-    supabase.auth.signOut();
+    toast("正在退出登录...");
+    await supabase.auth.signOut();
     router.refresh();
   };
   return (
