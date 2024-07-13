@@ -9,6 +9,6 @@ export default function InitMessages({ messages }: { messages: Imessage[] }) {
       useMessage.setState({ messages });
     }
     initState.current = true;
-  }, []);
+  }, [messages]);
   return <></>;
 }

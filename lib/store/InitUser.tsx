@@ -10,6 +10,6 @@ export default function InitUser({ user }: { user: User | undefined }) {
       useUser.setState({ user });
     }
     initState.current = true;
-  }, []);
+  }, [user]);
   return <></>;
 }
