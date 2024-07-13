@@ -1,31 +1,55 @@
 "use client";
+import React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-export default function Navbar() {
+import { supabaseBrowser } from "@/lib/supabase/browser";
+import { Button } from "@/components/ui/button";
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+
+export default function Navbar({ user }: { user: User | undefined }) {
+  const router = useRouter();
+  const handleLoginWithGithub = async () => {
+    const supabase = supabaseBrowser();
+    supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo: window.location.origin + "/auth/callback",
+      },
+    });
+  };
+  const handleLogout = async () => {
+    const supabase = supabaseBrowser();
+    supabase.auth.signOut();
+    router.refresh();
+  };
   return (
     <div className="flex justify-between">
-      <div>三</div>
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="avatar" />
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {/* <DropdownMenuLabel>ws18022@outlook.com</DropdownMenuLabel> */}
-            <DropdownMenuCheckboxItem>退出登录</DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <div></div>
+      {user ? (
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar>
+                <AvatarImage src={user.user_metadata.avatar_url} alt="avatar" />
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {/* <DropdownMenuLabel>ws18022@outlook.com</DropdownMenuLabel> */}
+              <DropdownMenuCheckboxItem onClick={handleLogout}>
+                退出登录
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ) : (
+        <Button onClick={handleLoginWithGithub}>登录</Button>
+      )}
     </div>
   );
 }
