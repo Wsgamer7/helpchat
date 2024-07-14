@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/lib/store/user";
 import { Imessage, useMessage } from "@/lib/store/messages";
+import { ImageUp } from "lucide-react";
+
 export default function ChatInput() {
   const [message, setMessage] = useState("");
   const user = useUser((state) => state.user);
@@ -42,6 +44,31 @@ export default function ChatInput() {
       toast.error("消息不能为空");
     }
   };
+  const uploadFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    toast("上传中...");
+    if (file) {
+      const { data, error } = await supabase.storage
+        .from("images")
+        .upload(`public/${file.name}`, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+      if (error) {
+        toast.error("上传错误:" + error.message);
+      } else {
+        const { data, error } = await supabase.storage
+          .from("images")
+          .createSignedUrl(`public/${file.name}`, 60);
+        if (error) {
+          toast.error("geturl错误:" + error.message);
+          console.log(error.message);
+        }
+        console.log(data?.signedUrl);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col items-center md:mb-10 mb-5">
       <Slider
@@ -51,6 +78,18 @@ export default function ChatInput() {
         step={1}
       />
       <div className="flex w-full max-w-[710px] items-center space-x-2">
+        <form id="uploadForm">
+          <label className="cursor-pointer " htmlFor="fileInput">
+            <ImageUp />
+          </label>
+          <input
+            type="file"
+            id="fileInput"
+            name="file"
+            style={{ display: "none" }}
+            onChange={uploadFile}
+          />
+        </form>
         <Input
           type="text"
           placeholder="发消息"
