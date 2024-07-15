@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/lib/store/user";
 import { Imessage, useMessage } from "@/lib/store/messages";
-import { timestampForFile } from "@/lib/utils";
+import { getFileExtension, timestampForFile } from "@/lib/utils";
 import { ImageUp } from "lucide-react";
 
 export default function ChatInput() {
@@ -47,7 +47,15 @@ export default function ChatInput() {
   };
   const uploadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    const filenameWithTime = timestampForFile() + file?.name;
+    if (!file) {
+      return;
+    }
+    const fileExtension = getFileExtension(file);
+    if (!fileExtension) {
+      toast.error("文件格式错误");
+      return;
+    }
+    const filenameWithTime = timestampForFile() + "." + fileExtension;
     console.log(filenameWithTime);
     // toast("上传中...这需要一点时间");
     if (file) {

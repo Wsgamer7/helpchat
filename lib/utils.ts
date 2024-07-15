@@ -17,3 +17,9 @@ export function timestampForFile() {
 
   return `${year}${month}${day}_${hours}${minutes}${seconds}`;
 }
+
+export function getFileExtension(file: File): string | undefined {
+  const fileName = file.name;
+  const extension = fileName.split(".").pop();
+  return extension === fileName ? undefined : extension;
+}

@@ -43,7 +43,7 @@ export default function ListMessgages() {
           className="bottom-[6.5rem] md:bottom-[8rem] left-1/2 absolute"
           onClick={scrollDown}
         >
-          <div className="w-10 h-10 bg-blue-500 text-white rounded-full transition-all justify-center items-center border cursor-pointer flex hover:scale-110  mx-auto">
+          <div className="w-10 h-10  text-primary rounded-full transition-all justify-center items-center border cursor-pointer flex hover:scale-110  mx-auto">
             <ArrowDown />
           </div>
         </div>
