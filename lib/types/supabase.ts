@@ -13,7 +13,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          img_url: string | null
+          img_path: string | null
           reci_id: string
           send_id: string
           text: string | null
@@ -21,7 +21,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          img_url?: string | null
+          img_path?: string | null
           reci_id?: string
           send_id?: string
           text?: string | null
@@ -29,7 +29,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
-          img_url?: string | null
+          img_path?: string | null
           reci_id?: string
           send_id?: string
           text?: string | null

@@ -14,7 +14,7 @@ export default async function ChatMessages() {
   const { data } = await supabase
     .from("messages")
     .select("*, profiles(*)")
-    .or(`reci_id.eq.${user_id}, send_id.eq.${user_id}`);
+    .or(`reci_id.eq.${user_id}, send_id.eq.${user_id}`).order('created_at');
   return (
     <Suspense fallback={"loading..."}>
       <ListMessgages />

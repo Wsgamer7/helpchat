@@ -1,11 +1,51 @@
+"use client";
 import { Imessage } from "@/lib/store/messages";
 import Image from "next/image";
 import FormatDate from "./FormatDate";
 import Link from "next/link";
 import { useUser } from "@/lib/store/user";
+import { useEffect, useState } from "react";
+import { supabaseBrowser } from "@/lib/supabase/browser";
+import { toast } from "sonner";
 
 export default function Message({ message }: { message: Imessage }) {
   const user = useUser((state) => state.user);
+  /*get img local url if need */
+  const [imageData, setImageData] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // 在组件卸载时释放 Blob URL
+      if (imageData) {
+        URL.revokeObjectURL(imageData);
+      }
+    };
+  }, [imageData]);
+
+  useEffect(() => {
+    if (message.img_path) {
+      if (!message.text) {
+        const supabase = supabaseBrowser();
+        const downloadImage = async () => {
+          const { data, error } = await supabase.storage
+            .from("images")
+            .download(message.img_path!);
+          console.log("downloading sucesss:" + message.img_path!);
+          if (error) {
+            toast.error("下载图片失败:" + error.message);
+          }
+          const blobUrl = URL.createObjectURL(data!);
+          setImageData(blobUrl);
+        };
+        downloadImage();
+      } else {
+        /*对于用户刚上传的图片，图片bloburl在message.text中*/
+        console.log("a message added in messages list local");
+        setImageData(message.text);
+      }
+    }
+  }, [message]);
+
   if (user?.id === message.profiles?.id) {
     //right side message
     return (
@@ -15,15 +55,16 @@ export default function Message({ message }: { message: Imessage }) {
             <FormatDate dateString={message.created_at} />
           </h1>
           <div>
-            {message.img_url ? (
-              <Link href={message.img_url}>
-                <Image
-                  src={message.img_url}
-                  alt="图片"
-                  width={100}
-                  height={200}
-                />
-              </Link>
+            {message.img_path ? (
+              <img
+                src={imageData!}
+                alt="image"
+                style={{
+                  maxWidth: "300px",
+                  maxHeight: "300px",
+                  marginTop: "20px",
+                }}
+              />
             ) : (
               <p className="bg-primary text-white max-w-[50vw] md:max-w-[35vw] rounded-md p-2 break-words">
                 {message.text}
@@ -49,15 +90,16 @@ export default function Message({ message }: { message: Imessage }) {
           <h1 className="text-sm text-gray-400">
             <FormatDate dateString={message.created_at} />
           </h1>
-          {message.img_url ? (
-            <Link href={message.img_url}>
-              <Image
-                src={message.img_url}
-                alt="图片"
-                width={100}
-                height={200}
-              />
-            </Link>
+          {message.img_path ? (
+            <img
+              src={imageData!}
+              alt="image"
+              style={{
+                maxWidth: "300px",
+                maxHeight: "300px",
+                marginTop: "20px",
+              }}
+            />
           ) : (
             <p className="bg-secondary max-w-full w-fit rounded-md p-2 break-words mr-5">
               {message.text}

@@ -23,7 +23,7 @@ export default function ChatInput() {
         text: message,
         send_id: user?.id!,
         reci_id: "1",
-        img_url: null,
+        img_path: null,
         created_at: new Date().toISOString(),
         profiles: {
           id: user?.id!,
@@ -39,7 +39,7 @@ export default function ChatInput() {
         .from("messages")
         .insert({ text: msg_copy });
       if (error) {
-        toast.error("图片消息错误" + error.message);
+        toast.error("上传文字消息错误" + error.message);
       }
     } else {
       toast.error("消息不能为空");
@@ -49,50 +49,49 @@ export default function ChatInput() {
     const file = event.target.files?.[0];
     const filenameWithTime = timestampForFile() + file?.name;
     console.log(filenameWithTime);
-    toast("上传中...这需要一点时间");
+    // toast("上传中...这需要一点时间");
     if (file) {
-      const { data, error } = await supabase.storage
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        const newMessage: Imessage = {
+          id: uuidv4(),
+          text: reader.result as string,
+          send_id: user?.id!,
+          reci_id: "1",
+          img_path: filenameWithTime,
+          created_at: new Date().toISOString(),
+          profiles: {
+            id: user?.id!,
+            full_name: user?.user_metadata.fullname,
+            avatar_url: user?.user_metadata.avatar_url,
+            email: null,
+          },
+        };
+        addMessage(newMessage);
+      };
+
+      const upImgPromise = supabase.storage
         .from("images")
         .upload(`${user?.id!}/${filenameWithTime}`, file, {
           cacheControl: "3600",
           upsert: false,
         });
-      if (error) {
-        toast.error("上传错误:" + error.message);
-      } else {
-        /*上传成功，获取临时url */
-        const { data, error } = await supabase.storage
-          .from("images")
-          .createSignedUrl(`${user?.id!}/${filenameWithTime}`, 60);
-        if (error) {
-          toast.error("geturl错误:" + error.message);
-          console.log(error.message);
-        } else {
-          /*获取临时url成功，创建新Imessage*/
-          console.log(data?.signedUrl);
-          const newMessage: Imessage = {
-            id: uuidv4(),
-            text: null,
-            send_id: user?.id!,
-            reci_id: "1",
-            img_url: data?.signedUrl,
-            created_at: new Date().toISOString(),
-            profiles: {
-              id: user?.id!,
-              full_name: user?.user_metadata.fullname,
-              avatar_url: user?.user_metadata.avatar_url,
-              email: null,
-            },
-          };
-          addMessage(newMessage);
-          const { error } = await supabase
-            .from("messages")
-            .insert({ img_url: data?.signedUrl });
-          if (error) {
-            toast.error("图片消息错误:" + error.message);
-          }
-        }
+      const upMessagePromise = supabase
+        .from("messages")
+        .insert({ img_path: `${user?.id!}/${filenameWithTime}` });
+
+      const [{ data, error: upImgErr }, { error: upMsgErr }] =
+        await Promise.all([upImgPromise, upMessagePromise]);
+      if (upImgErr) {
+        toast.error("上传错误:" + upImgErr.message);
       }
+
+      if (upMsgErr) {
+        toast.error("上传文字消息错误" + upMsgErr.message);
+      }
+    } else {
+      toast.error("消息不能为空");
     }
   };
 

@@ -3,7 +3,7 @@ import { create } from "zustand";
 export type Imessage = {
   created_at: string;
   id: string;
-  img_url: string | null;
+  img_path: string | null;
   reci_id: string;
   send_id: string;
   text: string | null;
