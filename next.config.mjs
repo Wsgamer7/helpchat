@@ -10,12 +10,6 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "techcommunity.microsoft.com",
-        port: "",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
         hostname: "zsiyhbzzkskdywvuzasy.supabase.co",
         port: "",
         pathname: "/storage/v1/object/sign/**",

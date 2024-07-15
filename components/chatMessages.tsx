@@ -5,8 +5,16 @@ import InitMessages from "@/lib/store/InitMessages";
 
 export default async function ChatMessages() {
   const supabase = supabaseServer();
-  const { data } = await supabase.from("messages").select("*, profiles(*)");
-  console.log(data);
+  let user_id: string;
+  {
+    const { data, error } = await supabase.auth.getSession();
+    user_id = data.session?.user?.id!;
+  }
+
+  const { data } = await supabase
+    .from("messages")
+    .select("*, profiles(*)")
+    .or(`reci_id.eq.${user_id}, send_id.eq.${user_id}`);
   return (
     <Suspense fallback={"loading..."}>
       <ListMessgages />

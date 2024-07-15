@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/lib/store/user";
 import { Imessage, useMessage } from "@/lib/store/messages";
+import { timestampForFile } from "@/lib/utils";
 import { ImageUp } from "lucide-react";
 
 export default function ChatInput() {
@@ -38,7 +39,7 @@ export default function ChatInput() {
         .from("messages")
         .insert({ text: msg_copy });
       if (error) {
-        toast.error(error.message);
+        toast.error("图片消息错误" + error.message);
       }
     } else {
       toast.error("消息不能为空");
@@ -46,25 +47,51 @@ export default function ChatInput() {
   };
   const uploadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    toast("上传中...");
+    const filenameWithTime = timestampForFile() + file?.name;
+    console.log(filenameWithTime);
+    toast("上传中...这需要一点时间");
     if (file) {
       const { data, error } = await supabase.storage
         .from("images")
-        .upload(`public/${file.name}`, file, {
+        .upload(`${user?.id!}/${filenameWithTime}`, file, {
           cacheControl: "3600",
           upsert: false,
         });
       if (error) {
         toast.error("上传错误:" + error.message);
       } else {
+        /*上传成功，获取临时url */
         const { data, error } = await supabase.storage
           .from("images")
-          .createSignedUrl(`public/${file.name}`, 60);
+          .createSignedUrl(`${user?.id!}/${filenameWithTime}`, 60);
         if (error) {
           toast.error("geturl错误:" + error.message);
           console.log(error.message);
+        } else {
+          /*获取临时url成功，创建新Imessage*/
+          console.log(data?.signedUrl);
+          const newMessage: Imessage = {
+            id: uuidv4(),
+            text: null,
+            send_id: user?.id!,
+            reci_id: "1",
+            img_url: data?.signedUrl,
+            created_at: new Date().toISOString(),
+            profiles: {
+              id: user?.id!,
+              full_name: user?.user_metadata.fullname,
+              avatar_url: user?.user_metadata.avatar_url,
+              email: null,
+            },
+          };
+          addMessage(newMessage);
+          const { error } = await supabase
+            .from("messages")
+            .insert({ img_url: data?.signedUrl });
+          if (error) {
+            toast.error("图片消息错误:" + error.message);
+          }
         }
-        console.log(data?.signedUrl);
       }
     }
   };
@@ -86,7 +113,8 @@ export default function ChatInput() {
             type="file"
             id="fileInput"
             name="file"
-            style={{ display: "none" }}
+            accept="image/*"
+            className="hidden"
             onChange={uploadFile}
           />
         </form>
