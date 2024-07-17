@@ -41,6 +41,42 @@ export default function ChatInput() {
       if (error) {
         toast.error("上传文字消息错误" + error.message);
       }
+      fetch("/api/text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: msg_copy }),
+      })
+        .then((response) => response.json())
+        .then(async (data) => {
+          console.log(data);
+          const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
+          const botAvatarUrl =
+            "https://zsiyhbzzkskdywvuzasy.supabase.co/storage/v1/object/sign/avatars/public/chengge.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzL3B1YmxpYy9jaGVuZ2dlLndlYnAiLCJpYXQiOjE3MjA5MjAxMzgsImV4cCI6MTc1MjQ1NjEzOH0.LtC8fy9bTGWMeI_JPt_Efh7T0zbZw6VFGhRxqqNv3QY&t=2024-07-14T01%3A22%3A18.358Z";
+          const newMessage: Imessage = {
+            id: uuidv4(),
+            text: data.text,
+            send_id: botId,
+            reci_id: "1",
+            img_path: null,
+            created_at: new Date().toISOString(),
+            profiles: {
+              id: "1",
+              full_name: "bot",
+              avatar_url: botAvatarUrl,
+              email: null,
+            },
+          };
+          addMessage(newMessage);
+          const { error } = await supabase
+            .from("messages")
+            .insert({ text: data.text, send_id: botId, reci_id: user?.id! });
+          if (error) {
+            console.log("数据库存储机器人回复失败");
+          }
+        })
+        .catch((error) => console.error("Error:", error));
     } else {
       toast.error("消息不能为空");
     }
