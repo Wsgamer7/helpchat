@@ -62,7 +62,7 @@ export default function Message({ message }: { message: Imessage }) {
                 style={{
                   maxWidth: "300px",
                   maxHeight: "300px",
-                  marginTop: "20px",
+                  marginTop: "10px",
                 }}
               />
             ) : (
@@ -97,7 +97,7 @@ export default function Message({ message }: { message: Imessage }) {
               style={{
                 maxWidth: "300px",
                 maxHeight: "300px",
-                marginTop: "20px",
+                marginTop: "10px",
               }}
             />
           ) : (
