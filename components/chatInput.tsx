@@ -35,12 +35,7 @@ export default function ChatInput() {
       addMessage(newMessage);
       const msg_copy = message;
       setMessage("");
-      const { error } = await supabase
-        .from("messages")
-        .insert({ text: msg_copy });
-      if (error) {
-        toast.error("上传文字消息错误" + error.message);
-      }
+
       fetch("/api/text", {
         method: "POST",
         headers: {
@@ -77,6 +72,13 @@ export default function ChatInput() {
           }
         })
         .catch((error) => console.error("Error:", error));
+
+      const { error } = await supabase
+        .from("messages")
+        .insert({ text: msg_copy });
+      if (error) {
+        toast.error("上传文字消息错误" + error.message);
+      }
     } else {
       toast.error("消息不能为空");
     }
