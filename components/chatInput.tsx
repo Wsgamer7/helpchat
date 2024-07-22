@@ -19,6 +19,14 @@ export default function ChatInput() {
   const supabase = supabaseBrowser();
   const sendMessage = async () => {
     if (message.trim() !== "") {
+      supabase
+        .from("messages")
+        .insert({ text: message })
+        .then(({ error }) => {
+          if (error) {
+            toast.error("上传文字消息错误" + error.message);
+          }
+        });
       const newMessage: Imessage = {
         id: uuidv4(),
         text: message,
@@ -49,13 +57,6 @@ export default function ChatInput() {
           console.log("数据库存储机器人回复失败");
         }
       }
-
-      const { error } = await supabase
-        .from("messages")
-        .insert({ text: msg_copy });
-      if (error) {
-        toast.error("上传文字消息错误" + error.message);
-      }
     } else {
       toast.error("消息不能为空");
     }
@@ -74,6 +75,14 @@ export default function ChatInput() {
     console.log(filenameWithTime);
     // toast("图片询问可能花费3秒钟以上，请耐心等待");
     if (file) {
+      supabase
+        .from("messages")
+        .insert({ img_path: `${user?.id!}/${filenameWithTime}` })
+        .then(({ error }) => {
+          if (error) {
+            toast.error("上传图片记录错误" + error.message);
+          }
+        });
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = () => {
@@ -100,9 +109,6 @@ export default function ChatInput() {
           cacheControl: "3600",
           upsert: false,
         });
-      const upMessagePromise = supabase
-        .from("messages")
-        .insert({ img_path: `${user?.id!}/${filenameWithTime}` });
 
       {
         const { data, error: upImgErr } = await upImgPromise;
@@ -127,12 +133,6 @@ export default function ChatInput() {
           if (error) {
             console.log("数据库存储机器人回复失败");
           }
-        }
-      }
-      {
-        const { error: upMsgErr } = await upMessagePromise;
-        if (upMsgErr) {
-          toast.error("上传图片记录错误" + upMsgErr.message);
         }
       }
     } else {
