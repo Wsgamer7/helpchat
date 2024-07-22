@@ -116,6 +116,18 @@ export default function ChatInput() {
         const messageFromApi = await callAiApi("", imgData!.signedUrl);
         console.log(imgData!.signedUrl);
         addMessage(messageFromApi!);
+
+        {
+          const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
+          const { error } = await supabase.from("messages").insert({
+            text: messageFromApi!.text,
+            send_id: botId,
+            reci_id: user?.id!,
+          });
+          if (error) {
+            console.log("数据库存储机器人回复失败");
+          }
+        }
       }
       {
         const { error: upMsgErr } = await upMessagePromise;
