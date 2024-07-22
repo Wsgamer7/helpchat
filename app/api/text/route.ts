@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     // 解析请求体
     const body = await req.json();
     // 获取答案
-    const answer = await getAnswer(body.text);
+    const answer = await getAnswer(body.text, body.img_url);
     console.log(answer);
 
     // 返回答案

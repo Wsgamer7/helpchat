@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/lib/store/user";
 import { Imessage, useMessage } from "@/lib/store/messages";
 import { getFileExtension, timestampForFile } from "@/lib/utils";
+import { callAiApi } from "@/lib/utils";
 import { ImageUp } from "lucide-react";
 
 export default function ChatInput() {
@@ -35,43 +36,19 @@ export default function ChatInput() {
       addMessage(newMessage);
       const msg_copy = message;
       setMessage("");
-
-      fetch("/api/text", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: msg_copy }),
-      })
-        .then((response) => response.json())
-        .then(async (data) => {
-          console.log(data);
-          const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
-          const botAvatarUrl =
-            "https://zsiyhbzzkskdywvuzasy.supabase.co/storage/v1/object/sign/avatars/public/chengge.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzL3B1YmxpYy9jaGVuZ2dlLndlYnAiLCJpYXQiOjE3MjA5MjAxMzgsImV4cCI6MTc1MjQ1NjEzOH0.LtC8fy9bTGWMeI_JPt_Efh7T0zbZw6VFGhRxqqNv3QY&t=2024-07-14T01%3A22%3A18.358Z";
-          const newMessage: Imessage = {
-            id: uuidv4(),
-            text: data.text,
-            send_id: botId,
-            reci_id: "1",
-            img_path: null,
-            created_at: new Date().toISOString(),
-            profiles: {
-              id: "1",
-              full_name: "bot",
-              avatar_url: botAvatarUrl,
-              email: null,
-            },
-          };
-          addMessage(newMessage);
-          const { error } = await supabase
-            .from("messages")
-            .insert({ text: data.text, send_id: botId, reci_id: user?.id! });
-          if (error) {
-            console.log("数据库存储机器人回复失败");
-          }
-        })
-        .catch((error) => console.error("Error:", error));
+      const messageFromApi = await callAiApi(msg_copy, "");
+      addMessage(messageFromApi!);
+      {
+        const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
+        const { error } = await supabase.from("messages").insert({
+          text: messageFromApi!.text,
+          send_id: botId,
+          reci_id: user?.id!,
+        });
+        if (error) {
+          console.log("数据库存储机器人回复失败");
+        }
+      }
 
       const { error } = await supabase
         .from("messages")
@@ -95,7 +72,7 @@ export default function ChatInput() {
     }
     const filenameWithTime = timestampForFile() + "." + fileExtension;
     console.log(filenameWithTime);
-    // toast("上传中...这需要一点时间");
+    // toast("图片询问可能花费3秒钟以上，请耐心等待");
     if (file) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -127,14 +104,24 @@ export default function ChatInput() {
         .from("messages")
         .insert({ img_path: `${user?.id!}/${filenameWithTime}` });
 
-      const [{ data, error: upImgErr }, { error: upMsgErr }] =
-        await Promise.all([upImgPromise, upMessagePromise]);
-      if (upImgErr) {
-        toast.error("上传错误:" + upImgErr.message);
-      }
+      {
+        const { data, error: upImgErr } = await upImgPromise;
+        if (upImgErr) {
+          toast.error("上传错误:" + upImgErr.message);
+        }
+        const { data: imgData } = await supabase.storage
+          .from("images")
+          .createSignedUrl(data!.path, 3600);
 
-      if (upMsgErr) {
-        toast.error("上传文字消息错误" + upMsgErr.message);
+        const messageFromApi = await callAiApi("", imgData!.signedUrl);
+        console.log(imgData!.signedUrl);
+        addMessage(messageFromApi!);
+      }
+      {
+        const { error: upMsgErr } = await upMessagePromise;
+        if (upMsgErr) {
+          toast.error("上传图片记录错误" + upMsgErr.message);
+        }
       }
     } else {
       toast.error("消息不能为空");
