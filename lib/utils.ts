@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
+import Compressor from "compressorjs";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -57,4 +58,23 @@ export async function callAiApi(text: string, img_url: string) {
     console.error("Error:", error);
     return null;
   }
+}
+
+export function compressImage(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    new Compressor(file, {
+      quality: 0.6, // Adjust the quality as needed
+      success(result) {
+        // Create a new File from the Blob result
+        const compressedFile = new File([result], file.name, {
+          type: result.type,
+          lastModified: Date.now(),
+        });
+        resolve(compressedFile);
+      },
+      error(err) {
+        reject(err);
+      },
+    });
+  });
 }

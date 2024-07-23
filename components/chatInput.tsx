@@ -8,8 +8,12 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/lib/store/user";
 import { Imessage, useMessage } from "@/lib/store/messages";
-import { getFileExtension, timestampForFile } from "@/lib/utils";
-import { callAiApi } from "@/lib/utils";
+import {
+  getFileExtension,
+  timestampForFile,
+  callAiApi,
+  compressImage,
+} from "@/lib/utils";
 import { ImageUp } from "lucide-react";
 
 export default function ChatInput() {
@@ -62,7 +66,7 @@ export default function ChatInput() {
     }
   };
   const uploadFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    let file = event.target.files?.[0];
     if (!file) {
       return;
     }
@@ -72,7 +76,6 @@ export default function ChatInput() {
       return;
     }
     const filenameWithTime = timestampForFile() + "." + fileExtension;
-    console.log(filenameWithTime);
     // toast("图片询问可能花费3秒钟以上，请耐心等待");
     if (file) {
       supabase
@@ -103,6 +106,9 @@ export default function ChatInput() {
         addMessage(newMessage);
       };
 
+      if (file.size > 1 * 1024 * 1024) {
+        file = await compressImage(file);
+      }
       const upImgPromise = supabase.storage
         .from("images")
         .upload(`${user?.id!}/${filenameWithTime}`, file, {
@@ -118,9 +124,8 @@ export default function ChatInput() {
         const { data: imgData } = await supabase.storage
           .from("images")
           .createSignedUrl(data!.path, 3600);
-
+        console.log(imgData);
         const messageFromApi = await callAiApi("", imgData!.signedUrl);
-        console.log(imgData!.signedUrl);
         addMessage(messageFromApi!);
 
         {
