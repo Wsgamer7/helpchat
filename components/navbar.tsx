@@ -1,17 +1,15 @@
 "use client";
 import React from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import dynamic from "next/dynamic";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+
+const AvatarDropDown = dynamic(() => import("./AvatarDropDown"), {
+  ssr: false,
+});
 
 export default function Navbar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -35,21 +33,7 @@ export default function Navbar({ user }: { user: User | undefined }) {
     <div className="flex justify-between">
       <div></div>
       {user ? (
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar>
-                <AvatarImage src={user.user_metadata.avatar_url} alt="avatar" />
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {/* <DropdownMenuLabel>ws18022@outlook.com</DropdownMenuLabel> */}
-              <DropdownMenuCheckboxItem onClick={handleLogout}>
-                退出登录
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <AvatarDropDown user={user} handleLogout={handleLogout} />
       ) : (
         <Button onClick={handleLoginWithGithub}>登录</Button>
       )}
