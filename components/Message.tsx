@@ -2,11 +2,11 @@
 import { Imessage } from "@/lib/store/messages";
 import Image from "next/image";
 import FormatDate from "./FormatDate";
-import Link from "next/link";
 import { useUser } from "@/lib/store/user";
 import { useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { toast } from "sonner";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 export default function Message({ message }: { message: Imessage }) {
   const user = useUser((state) => state.user);
@@ -66,8 +66,8 @@ export default function Message({ message }: { message: Imessage }) {
                 }}
               />
             ) : (
-              <p className="bg-primary text-white max-w-[50vw] md:max-w-[35vw] rounded-md p-2 break-words">
-                {message.text}
+              <p className="bg-primary text-white max-w-[50vw] md:max-w-[35vw] rounded-md p-3 break-words">
+                {message.text!}
               </p>
             )}
           </div>
@@ -101,9 +101,9 @@ export default function Message({ message }: { message: Imessage }) {
               }}
             />
           ) : (
-            <p className="bg-secondary max-w-full w-fit rounded-md p-2 break-words mr-5">
-              {message.text}
-            </p>
+            <div className="bg-secondary max-w-full w-fit rounded-md p-4 break-words mr-5">
+              <MarkdownRenderer markdown={message.text!} />
+            </div>
           )}
         </div>
       </div>
