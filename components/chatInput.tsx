@@ -196,7 +196,7 @@ export default function ChatInput() {
         step={1}
       />
       <div className="flex w-full max-w-[710px] items-center space-x-2 p-3 rounded-xl bg-secondary">
-        <form id="uploadForm" className="self-end mb-2">
+        <form id="uploadForm" className="self-end mb-1">
           <label className="cursor-pointer " htmlFor="fileInput">
             <ImageUp />
           </label>
@@ -223,7 +223,7 @@ export default function ChatInput() {
         <Button
           type="submit"
           onClick={sendMessage}
-          className="self-end "
+          className="self-end"
           size="icon"
         >
           <ArrowUp />
