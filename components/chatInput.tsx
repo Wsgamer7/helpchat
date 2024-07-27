@@ -190,12 +190,12 @@ export default function ChatInput() {
   return (
     <div className="flex flex-col items-center md:mb-10 mb-5">
       <Slider
-        className="my-3 max-w-[710px] mb-5 "
+        className="my-3 max-w-[860px] mb-5 "
         defaultValue={[33]}
         max={100}
         step={1}
       />
-      <div className="flex w-full max-w-[710px] items-center space-x-2 p-3 rounded-xl bg-secondary">
+      <div className="flex w-full max-w-[860px] items-center space-x-2 p-3 rounded-xl bg-secondary">
         <form id="uploadForm" className="self-end mb-1">
           <label className="cursor-pointer " htmlFor="fileInput">
             <ImageUp />
