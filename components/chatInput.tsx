@@ -188,9 +188,14 @@ export default function ChatInput() {
   };
 
   return (
-    <div className="flex flex-col items-center md:mb-10 mb-5 ">
-      <Slider className="my-3 mb-5" defaultValue={[33]} max={100} step={1} />
-      <div className="flex items-center space-x-2 p-3 rounded-xl bg-secondary">
+    <div className="flex flex-col items-center md:mb-10 mb-5">
+      <Slider
+        className="my-3 max-w-[710px] mb-5 "
+        defaultValue={[33]}
+        max={100}
+        step={1}
+      />
+      <div className="flex w-full max-w-[710px] items-center space-x-2 p-3 rounded-xl bg-secondary">
         <form id="uploadForm" className="self-end mb-1">
           <label className="cursor-pointer " htmlFor="fileInput">
             <ImageUp />
@@ -206,7 +211,7 @@ export default function ChatInput() {
         </form>
         <TextareaAutosize
           placeholder="发一条信息"
-          className="text-xl flex-1 max-h-[200px] resize-none bg-transparent focus-within:outline-none"
+          className="flex-1 max-h-[200px] w-full resize-none bg-transparent focus-within:outline-none"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {

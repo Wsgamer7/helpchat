@@ -49,7 +49,7 @@ export default function Message({ message }: { message: Imessage }) {
   if (user?.id === message.profiles?.id) {
     //right side message
     return (
-      <div className="flex-shrink-0 my-3 ">
+      <div className="flex-shrink-0 my-3 max-w-3xl w-full mx-auto  ">
         <div className="flex-1 overflow-x-hidden flex flex-col items-end mr-5">
           <h1 className="text-sm text-gray-400 ml-auto">
             <FormatDate dateString={message.created_at} />
@@ -77,7 +77,7 @@ export default function Message({ message }: { message: Imessage }) {
   }
   //left side message
   return (
-    <div className="flex-shrink-0 my-3 mx-auto  ">
+    <div className="flex-shrink-0 my-3 max-w-2xl w-full mx-auto  ">
       <div className="flex gap-2">
         <Image
           src={message.profiles?.avatar_url!}
