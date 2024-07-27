@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
 import Compressor from "compressorjs";
+import axios from "axios";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -28,14 +29,19 @@ export function getFileExtension(file: File): string | undefined {
 
 export async function callAiApi(text: string, img_url: string) {
   try {
-    const response = await fetch("/api/text", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await axios.post(
+      "/api/text",
+      {
+        text,
+        img_url,
       },
-      body: JSON.stringify({ text, img_url }),
-    });
-    const data = await response.json();
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = response.data;
     const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
     const botAvatarUrl =
       "https://zsiyhbzzkskdywvuzasy.supabase.co/storage/v1/object/sign/avatars/public/chengge.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzL3B1YmxpYy9jaGVuZ2dlLnBuZyIsImlhdCI6MTcyMTYxMDY3MywiZXhwIjoxNzUzMTQ2NjczfQ._MqxTKDPpvxESy9iePrWcgYaC8-ZZfS9jyyCuoUbWho&t=2024-07-22T01%3A11%3A14.524Z";
