@@ -14,18 +14,22 @@ import {
   callAiApi,
   compressImage,
 } from "@/lib/utils";
-import { ImageUp } from "lucide-react";
+import { ArrowUp, ImageUp } from "lucide-react";
+import TextareaAutosize from "react-textarea-autosize";
 
 export default function ChatInput() {
   const [message, setMessage] = useState("");
   const user = useUser((state) => state.user);
   const addMessage = useMessage((state) => state.addMessage);
+  const addStr2LastMessage = useMessage((state) => state.addStr2LastMessage);
+  const getLastContent = useMessage((state) => state.getLastConent);
   const supabase = supabaseBrowser();
   const sendMessage = async () => {
-    if (message.trim() !== "") {
+    const messageTrim = message.trim();
+    if (messageTrim !== "") {
       supabase
         .from("messages")
-        .insert({ text: message })
+        .insert({ text: messageTrim })
         .then(({ error }) => {
           if (error) {
             toast.error("上传文字消息错误" + error.message);
@@ -33,7 +37,7 @@ export default function ChatInput() {
         });
       const newMessage: Imessage = {
         id: uuidv4(),
-        text: message,
+        text: messageTrim,
         send_id: user?.id!,
         reci_id: "1",
         img_path: null,
@@ -46,21 +50,59 @@ export default function ChatInput() {
         },
       };
       addMessage(newMessage);
-      const msg_copy = message;
       setMessage("");
-      const messageFromApi = await callAiApi(msg_copy, "");
-      addMessage(messageFromApi!);
-      {
+      const prompt = messageTrim;
+      const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
+      const botAvatarUrl =
+        "https://zsiyhbzzkskdywvuzasy.supabase.co/storage/v1/object/sign/avatars/public/chengge.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzL3B1YmxpYy9jaGVuZ2dlLnBuZyIsImlhdCI6MTcyMTYxMDY3MywiZXhwIjoxNzUzMTQ2NjczfQ._MqxTKDPpvxESy9iePrWcgYaC8-ZZfS9jyyCuoUbWho&t=2024-07-22T01%3A11%3A14.524Z";
+      const messageFromApi: Imessage = {
+        id: uuidv4(),
+        text: "",
+        send_id: botId,
+        reci_id: user?.id!,
+        img_path: null,
+        created_at: new Date().toISOString(),
+        profiles: {
+          id: botId,
+          full_name: user?.user_metadata.fullname,
+          avatar_url: botAvatarUrl,
+          email: null,
+        },
+      };
+      addMessage(messageFromApi);
+      const eventSource = new EventSource(
+        `/api/text?prompt=${encodeURIComponent(prompt)}`
+      );
+      const uploadApiMsg2db = async () => {
         const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
         const { error } = await supabase.from("messages").insert({
-          text: messageFromApi!.text,
+          text: getLastContent(),
           send_id: botId,
           reci_id: user?.id!,
         });
         if (error) {
           console.log("数据库存储机器人回复失败");
         }
-      }
+      };
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.done) {
+          console.log("Stream ended");
+          eventSource.close();
+          uploadApiMsg2db();
+        } else if (data.error) {
+          console.error("Error:", data.error);
+          eventSource.close();
+          uploadApiMsg2db();
+        } else {
+          addStr2LastMessage(data.content);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("EventSource failed:", error);
+        eventSource.close();
+      };
     } else {
       toast.error("消息不能为空");
     }
@@ -153,8 +195,8 @@ export default function ChatInput() {
         max={100}
         step={1}
       />
-      <div className="flex w-full max-w-[710px] items-center space-x-2">
-        <form id="uploadForm">
+      <div className="flex w-full max-w-[710px] items-center space-x-2 p-3 rounded-xl bg-secondary">
+        <form id="uploadForm" className="self-end mb-2">
           <label className="cursor-pointer " htmlFor="fileInput">
             <ImageUp />
           </label>
@@ -167,9 +209,9 @@ export default function ChatInput() {
             onChange={uploadFile}
           />
         </form>
-        <Input
-          type="text"
-          placeholder="发消息"
+        <TextareaAutosize
+          placeholder="发一条信息"
+          className="flex-1 max-h-[200px] w-full resize-none bg-transparent focus-within:outline-none"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
@@ -178,8 +220,13 @@ export default function ChatInput() {
             }
           }}
         />
-        <Button type="submit" onClick={sendMessage}>
-          发送
+        <Button
+          type="submit"
+          onClick={sendMessage}
+          className="self-end "
+          size="icon"
+        >
+          <ArrowUp />
         </Button>
       </div>
     </div>
