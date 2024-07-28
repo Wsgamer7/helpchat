@@ -13,16 +13,6 @@ const AvatarDropDown = dynamic(() => import("./AvatarDropDown"), {
 
 export default function Navbar({ user }: { user: User | undefined }) {
   const router = useRouter();
-  const handleLoginWithGithub = async () => {
-    const supabase = supabaseBrowser();
-    toast("登录中...");
-    supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: {
-        redirectTo: window.location.origin + "/auth/callback",
-      },
-    });
-  };
   const handleLogout = async () => {
     const supabase = supabaseBrowser();
     toast("正在退出登录...");
@@ -35,7 +25,13 @@ export default function Navbar({ user }: { user: User | undefined }) {
       {user ? (
         <AvatarDropDown user={user} handleLogout={handleLogout} />
       ) : (
-        <Button onClick={handleLoginWithGithub}>登录</Button>
+        <Button
+          onClick={() => {
+            router.push("/login");
+          }}
+        >
+          登录
+        </Button>
       )}
     </div>
   );

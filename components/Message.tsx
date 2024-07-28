@@ -7,8 +7,9 @@ import { useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { toast } from "sonner";
 import Markdown from "markdown-to-jsx";
+import React from "react";
 
-export default function Message({ message }: { message: Imessage }) {
+function Message({ message }: { message: Imessage }) {
   const user = useUser((state) => state.user);
   /*get img local url if need */
   const [imageData, setImageData] = useState<string | null>(null);
@@ -110,3 +111,5 @@ export default function Message({ message }: { message: Imessage }) {
     </div>
   );
 }
+
+export default React.memo(Message);
