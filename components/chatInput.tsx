@@ -215,7 +215,12 @@ export default function ChatInput() {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              sendMessage();
+              e.preventDefault();
+              if (e.shiftKey) {
+                setMessage(message + "\n");
+              } else {
+                sendMessage();
+              }
             }
           }}
         />
