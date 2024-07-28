@@ -1,7 +1,6 @@
 "use client";
 import React, { ChangeEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { toast } from "sonner";
