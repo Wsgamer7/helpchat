@@ -25,7 +25,7 @@ export default function ListMessgages() {
   useEffect(() => {
     const timer = setTimeout(() => {
       scrollDown();
-    }, 100);
+    }, 50);
 
     return () => clearTimeout(timer);
   }, [messages]);

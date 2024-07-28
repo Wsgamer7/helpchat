@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useMessage } from "@/lib/store/messages";
 
 const AvatarDropDown = dynamic(() => import("./AvatarDropDown"), {
   ssr: false,
@@ -13,10 +14,12 @@ const AvatarDropDown = dynamic(() => import("./AvatarDropDown"), {
 
 export default function Navbar({ user }: { user: User | undefined }) {
   const router = useRouter();
+  const rmMessages = useMessage((state) => state.rmMessages);
   const handleLogout = async () => {
     const supabase = supabaseBrowser();
     toast("正在退出登录...");
     await supabase.auth.signOut();
+    rmMessages();
     router.refresh();
   };
   return (
