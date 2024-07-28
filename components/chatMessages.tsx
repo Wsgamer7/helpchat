@@ -14,7 +14,12 @@ export default async function ChatMessages() {
   const { data } = await supabase
     .from("messages")
     .select("*, profiles(*)")
-    .or(`reci_id.eq.${user_id}, send_id.eq.${user_id}`).order('created_at');
+    .or(`reci_id.eq.${user_id}, send_id.eq.${user_id}`)
+    .order("created_at", { ascending: false })
+    .limit(10);
+  if (data) {
+    data.reverse();
+  }
   return (
     <Suspense fallback={"loading..."}>
       <ListMessgages />
