@@ -10,7 +10,7 @@ export default async function Home() {
   const { data, error } = await supabase.auth.getSession();
   return (
     <>
-      <div className="flex flex-col fullScreen mx-5 my-2 relative">
+      <div className="flex flex-col fullScreen mx-5 my-2 relative md:py-3">
         <Navbar user={data.session?.user} />
         <ChatMessages />
         <ChatInput />

@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "恋爱导师",
+  title: "帮你聊天",
   description: "你发聊天记录，我教你拿下对方",
 };
 

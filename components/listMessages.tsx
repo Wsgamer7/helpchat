@@ -4,6 +4,7 @@ import { useMessage } from "@/lib/store/messages";
 import Message from "./Message";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown } from "lucide-react";
+import Welcome from "./welcome";
 
 export default function ListMessgages() {
   const [userScroll, setUserScroll] = useState(false);
@@ -20,6 +21,9 @@ export default function ListMessgages() {
     }
   };
   const scrollDown = () => {
+    if (messages.length == 0) {
+      return;
+    }
     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   };
   useEffect(() => {
@@ -29,6 +33,14 @@ export default function ListMessgages() {
 
     return () => clearTimeout(timer);
   }, [messages]);
+
+  if (messages.length == 0) {
+    return (
+      <div className="flex-1 h-full max-w-[800px] w-full mx-auto">
+        <Welcome />
+      </div>
+    );
+  }
   return (
     <div
       className="flex-1 h-full flex flex-col overflow-y-scroll"

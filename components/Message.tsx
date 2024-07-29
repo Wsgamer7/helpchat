@@ -82,7 +82,7 @@ function Message({ message }: { message: Imessage }) {
       <div className="flex gap-2">
         <Image
           src={message.profiles?.avatar_url!}
-          alt={message.profiles?.full_name!}
+          alt="avatar"
           width={40}
           height={40}
           className="h-8 w-8 rounded-full flex-shrink-0"
