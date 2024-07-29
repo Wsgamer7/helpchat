@@ -8,6 +8,14 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMessage } from "@/lib/store/messages";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 const AvatarDropDown = dynamic(() => import("./AvatarDropDown"), {
   ssr: false,
 });
@@ -23,8 +31,19 @@ export default function Navbar({ user }: { user: User | undefined }) {
     router.refresh();
   };
   return (
-    <div className="flex justify-between">
-      <div></div>
+    <div className="flex justify-between px-3">
+      <div className="text-gray-500">
+        <Select>
+          <SelectTrigger className="">
+            <SelectValue placeholder="诚哥" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="chengge">诚哥</SelectItem>
+            <SelectItem value="light">演唱会女主</SelectItem>
+            <SelectItem value="dark">童锦程</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       {user ? (
         <AvatarDropDown user={user} handleLogout={handleLogout} />
       ) : (
