@@ -31,7 +31,7 @@ export default function Navbar({ user }: { user: User | undefined }) {
     router.refresh();
   };
   return (
-    <div className="flex justify-between px-3">
+    <div className="flex justify-between md:px-3">
       <div className="text-gray-500">
         <Select>
           <SelectTrigger className="">
