@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ const AvatarDropDown = dynamic(() => import("./AvatarDropDown"), {
 export default function Navbar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const rmMessages = useMessage((state) => state.rmMessages);
+  const [avatar_url, setAvatar_url] = useState("");
   const handleLogout = async () => {
     const supabase = supabaseBrowser();
     toast("正在退出登录...");
@@ -30,6 +31,18 @@ export default function Navbar({ user }: { user: User | undefined }) {
     rmMessages();
     router.refresh();
   };
+  useEffect(() => {
+    if (user) {
+      const supabase = supabaseBrowser();
+      supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user.id)
+        .then((response) => {
+          setAvatar_url(response!.data![0].avatar_url);
+        });
+    }
+  }, [user]);
   return (
     <div className="flex justify-between md:px-3">
       <div className="text-gray-500">
@@ -45,7 +58,11 @@ export default function Navbar({ user }: { user: User | undefined }) {
         </Select>
       </div>
       {user ? (
-        <AvatarDropDown user={user} handleLogout={handleLogout} />
+        <AvatarDropDown
+          user={user}
+          avatar_url={avatar_url}
+          handleLogout={handleLogout}
+        />
       ) : (
         <Button
           onClick={() => {

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 interface AvatarDropDownProps {
-  user: User;
+  avatar_url: string;
   handleLogout: () => void;
 }
 export default function AvatarDropDown(props: AvatarDropDownProps) {
@@ -16,10 +16,7 @@ export default function AvatarDropDown(props: AvatarDropDownProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar>
-            <AvatarImage
-              src={props.user.user_metadata.avatar_url}
-              alt="avatar"
-            />
+            <AvatarImage src={props.avatar_url} alt="avatar" />
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>

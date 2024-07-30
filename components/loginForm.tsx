@@ -21,7 +21,8 @@ export default function LoginForm() {
   const vaildPassword = (password: string) => {
     return password.length >= 6;
   };
-  const logInWithEmail = async () => {
+  const logInWithEmail = async (e: any) => {
+    e.preventDefault();
     if (!vaildEmail(email)) {
       return;
     }
@@ -33,10 +34,10 @@ export default function LoginForm() {
       email,
       password,
     });
-    console.log(error);
     if (error) {
       toast.error("账号或密码错误");
     } else {
+      console.log("登录成功");
       router.push("/");
     }
   };
@@ -70,6 +71,7 @@ export default function LoginForm() {
                 className="peer block w-full rounded-md border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
                 id="email"
                 type="email"
+                value={email}
                 name="email"
                 onChange={(e) => {
                   e.preventDefault();
@@ -86,6 +88,7 @@ export default function LoginForm() {
                 className="peer block w-full rounded-md border bg-zinc-50 px-2 py-[9px] text-sm outline-none placeholder:text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950"
                 id="password"
                 type="password"
+                value={password}
                 name="password"
                 onChange={(e) => {
                   e.preventDefault();
