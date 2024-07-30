@@ -58,11 +58,7 @@ export default function Navbar({ user }: { user: User | undefined }) {
         </Select>
       </div>
       {user ? (
-        <AvatarDropDown
-          user={user}
-          avatar_url={avatar_url}
-          handleLogout={handleLogout}
-        />
+        <AvatarDropDown avatar_url={avatar_url} handleLogout={handleLogout} />
       ) : (
         <Button
           onClick={() => {
