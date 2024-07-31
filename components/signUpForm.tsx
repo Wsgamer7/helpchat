@@ -45,6 +45,9 @@ export default function SignUpForm() {
       toast.error("注册失败");
     } else {
       toast.success("注册成功, 请查看邮箱验证");
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
     }
   };
 
