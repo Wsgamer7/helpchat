@@ -23,7 +23,7 @@ export default function ChatInput() {
   const addStr2LastMessage = useMessage((state) => state.addStr2LastMessage);
   const getLastContent = useMessage((state) => state.getLastConent);
   const supabase = supabaseBrowser();
-  const sendMessage = async () => {
+  const sendMessage = async (message: string) => {
     const messageTrim = message.trim();
     if (messageTrim !== "") {
       supabase
@@ -219,14 +219,16 @@ export default function ChatInput() {
               if (e.shiftKey) {
                 setMessage(message + "\n");
               } else {
-                sendMessage();
+                sendMessage(message);
               }
             }
           }}
         />
         <Button
           type="submit"
-          onClick={sendMessage}
+          onClick={() => {
+            sendMessage(message);
+          }}
           className="self-end"
           size="icon"
         >

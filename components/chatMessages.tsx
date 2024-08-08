@@ -10,7 +10,6 @@ export default async function ChatMessages() {
     const { data, error } = await supabase.auth.getSession();
     user_id = data.session?.user?.id!;
   }
-
   const { data } = await supabase
     .from("messages")
     .select("*, profiles(*)")
