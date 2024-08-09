@@ -53,7 +53,7 @@ export default function ChatInput() {
       const prompt = messageTrim;
       const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
       const botAvatarUrl =
-        "https://zsiyhbzzkskdywvuzasy.supabase.co/storage/v1/object/sign/avatars/public/chengge.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzL3B1YmxpYy9jaGVuZ2dlLnBuZyIsImlhdCI6MTcyMTYxMDY3MywiZXhwIjoxNzUzMTQ2NjczfQ._MqxTKDPpvxESy9iePrWcgYaC8-ZZfS9jyyCuoUbWho&t=2024-07-22T01%3A11%3A14.524Z";
+        "https://zsiyhbzzkskdywvuzasy.supabase.co/storage/v1/object/public/public_img/chengge.webp";
       const messageFromApi: Imessage = {
         id: uuidv4(),
         text: "",
