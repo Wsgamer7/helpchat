@@ -70,7 +70,7 @@ export default function ChatInput() {
       };
       addMessage(messageFromApi);
       const eventSource = new EventSource(
-        `/api/text?prompt=${encodeURIComponent(prompt)}`
+        `/api/text?prompt=${encodeURIComponent(prompt)}`,
       );
       const uploadApiMsg2db = async () => {
         const botId = "4d9e91ca-f832-4bb4-b1fc-feee388d6a4e";
@@ -124,7 +124,7 @@ export default function ChatInput() {
         .insert({ img_path: `${user?.id!}/${filenameWithTime}` })
         .then(({ error }) => {
           if (error) {
-            toast.error("上传图片记录错误" + error.message);
+            toast.error("登陆才能上传图片");
           }
         });
       const reader = new FileReader();
